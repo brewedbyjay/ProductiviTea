@@ -1,4 +1,5 @@
 import type { Activity, Completion } from '../domain/activity';
+import type { Redemption, Reward } from '../domain/reward';
 
 // Repository ports — the seam between use-cases and storage. The slice backs
 // these with Dexie/IndexedDB; phase 2 swaps in an API client implementation
@@ -13,4 +14,15 @@ export interface CompletionRepository {
   // Append-only: completions are never updated, only added (SPEC §10).
   add(completion: Completion): Promise<void>;
   getAll(): Promise<Completion[]>;
+}
+
+export interface RewardRepository {
+  add(reward: Reward): Promise<void>;
+  getAll(): Promise<Reward[]>;
+}
+
+export interface RedemptionRepository {
+  // Append-only spend log, mirroring CompletionRepository (SPEC §10).
+  add(redemption: Redemption): Promise<void>;
+  getAll(): Promise<Redemption[]>;
 }
