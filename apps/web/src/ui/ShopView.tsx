@@ -16,9 +16,12 @@ import {
 export default function ShopView({
   balance,
   onBalanceChange,
+  reloadKey = 0,
 }: {
   balance: number;
   onBalanceChange: () => void;
+  // Bumped by App after a reset so the rewards list re-loads (e.g. after a wipe).
+  reloadKey?: number;
 }) {
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [name, setName] = useState('');
@@ -30,7 +33,7 @@ export default function ShopView({
 
   useEffect(() => {
     void loadRewards();
-  }, []);
+  }, [reloadKey]);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -56,25 +59,37 @@ export default function ShopView({
   return (
     <section>
       <form className="add-form" onSubmit={handleAdd}>
-        <input
-          aria-label="Reward name"
-          placeholder="New reward (e.g. Cola)"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <select
-          aria-label="Reward cost"
-          value={cost}
-          onChange={(e) => setCost(Number(e.target.value))}
-        >
-          {FIBONACCI_TIERS.map((tier) => (
-            <option key={tier} value={tier}>
-              {tier}
-            </option>
-          ))}
-        </select>
-        <button type="submit">Add</button>
+        <label className="field field--grow">
+          <span className="field-label">Reward</span>
+          <input
+            aria-label="Reward name"
+            placeholder="New reward (e.g. Cola)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
+
+        <label className="field">
+          <span className="field-label">Cost</span>
+          <select
+            aria-label="Reward cost"
+            value={cost}
+            onChange={(e) => setCost(Number(e.target.value))}
+          >
+            {FIBONACCI_TIERS.map((tier) => (
+              <option key={tier} value={tier}>
+                {tier}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <button type="submit" className="add-submit">
+          Add
+        </button>
       </form>
+
+      <h2 className="shop-title">Rewards</h2>
 
       <ul className="row-list">
         {rewards.length === 0 && (
@@ -85,6 +100,7 @@ export default function ShopView({
             <span className="row-name">{reward.name}</span>
             <span className="row-cost">{reward.baseCost}</span>
             <button
+              className="redeem-button"
               onClick={() => handleRedeem(reward)}
               disabled={!canAfford(balance, reward.baseCost)}
             >

@@ -1,15 +1,50 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   font: 16px/1.45 var(--sans);
-  color-scheme: light dark;
+  /* Light mode only — the design is built around the pastel palette below. */
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* The selectable category palette (kept in sync with ui/palette.ts). */
+  --c-red: #ffadad;
+  --c-orange: #ffd6a5;
+  --c-yellow: #fdffb6;
+  --c-green: #caffbf;
+  --c-cyan: #9bf6ff;
+  --c-blue: #a0c4ff;
+  --c-purple: #bdb2ff;
+  --c-pink: #ffc6ff;
+
+  /* Light-mode surface + text tokens. */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --text: #1f2328;
+  --muted: #6b7280;
+  --border: #e5e5e5;
+  /* A darker edge for interactive fields (inputs/selects) so they read as
+     distinct, tappable surfaces against the white background. */
+  --field-border: #c8ccd2;
+  --accent: #4a7c3f;
+  --coin: #c89b3c;
+  /* Highlighted parts (active nav segment, etc.). */
+  --highlight: #a0c4ff;
 }
 
 body {
   margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  /* Guards the full-bleed top bar from causing a horizontal scrollbar. */
+  overflow-x: hidden;
 }
 
 button {

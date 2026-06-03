@@ -14,6 +14,9 @@ apps/desktop/src-tauri/gen/
 *.log
 npm-debug.log*
 
+# Local session handoff scratchpad
+CONTINUE.md
+
 # Editor / OS
 .vscode/*
 !.vscode/extensions.json

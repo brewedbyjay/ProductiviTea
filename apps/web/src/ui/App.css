@@ -1,65 +1,347 @@
-/* Mobile-first, deliberately minimal styling for the slice. */
+/* Mobile-first, light-mode styling. Colors come from the tokens in index.css.
+   The app spans nearly edge to edge — 94% wide, leaving ~3% on each side. The
+   bottom padding clears the fixed mobile navbar. */
 .app {
-  max-width: 480px;
+  position: relative; /* anchors the settings dropdown */
+  width: 94%;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1rem 0 5rem;
 }
 
 .topbar {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 0.5rem;
+  /* Flex `align-items: center` plus the symmetric vertical padding below center
+     the row. We keep the inherited line-height (not 1) so each text element's
+     half-leading is balanced — stripping it makes the descender-less title ride
+     high in its line box, which reads as phantom padding under the bar. */
+  border-bottom: 1px solid var(--border);
+  /* Full-bleed header: stretch edge to edge (sides) and pull up by the app's 1rem
+     top padding so the bar sits flush against the top instead of floating below
+     it. The title/stats keep the same 3vw inset as the rest of the app. */
+  margin: -1rem calc(-50vw + 50%) 0;
+  padding: 0.5rem 3vw;
 }
 
 .topbar h1 {
-  font-size: 1.25rem;
+  font-size: 1.05rem;
   margin: 0;
 }
 
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+/* The settings cog in the top-right corner (desktop). A PNG icon button. */
+.settings-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.settings-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+
+.settings-button:hover .settings-icon {
+  opacity: 1;
+}
+
+/* Dropdown opened from the cog, anchored to the top-right of the app. */
+.settings-panel {
+  position: absolute;
+  top: 2.6rem;
+  right: 0;
+  z-index: 20;
+  min-width: 13rem;
+  padding: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Shared settings body (cog dropdown + mobile Settings view). */
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.settings-section__label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.settings-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.settings-buttons button {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.settings-buttons button:hover {
+  background: #f1f2f4;
+}
+
+/* The account reset — destructive, so styled as a danger action. */
+.danger-button {
+  align-self: flex-start;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #e0a3a3;
+  border-radius: 8px;
+  background: #fff;
+  color: #b3261e;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.danger-button:hover {
+  background: #fdecec;
+}
+
+/* Streak + balance: the value with its icon to the right of the number. */
+.streak,
 .balance {
-  font-size: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 1.15rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
-.balance::before {
-  content: '\2022 '; /* a small coin dot; no emojis per project convention */
-  color: #c89b3c;
+.streak {
+  color: var(--accent);
 }
 
-/* Tasks / Shop switch — seeds the future bottom navbar. */
-.view-toggle {
+/* Top-bar value icons, scaled to the text. */
+.stat-icon {
+  width: 1.05em;
+  height: 1.05em;
+  object-fit: contain;
+}
+
+/* The streak lightning (streak.png) is a black silhouette tinted green via mask. */
+.streak-icon {
+  background-color: var(--accent);
+  -webkit-mask: url(/streak.png) center / contain no-repeat;
+  mask: url(/streak.png) center / contain no-repeat;
+}
+
+/* Fixed bottom navbar (mobile). Hidden on wide screens where both panes show.
+   Classic segmented style: flat cells split by dividers — | Tasks | + | Shop |. */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
   display: flex;
-  gap: 0.5rem;
-  margin: 1rem 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
 }
 
-.view-toggle button {
+/* Mobile: only the selected pane shows; the bottom nav switches between them
+   (Tasks and + share the tasks pane). Desktop overrides this below. */
+@media (max-width: 767px) {
+  .tasks-pane,
+  .shop-pane,
+  .stats-pane,
+  .settings-pane {
+    display: none;
+  }
+
+  .workspace--tasks .tasks-pane,
+  .workspace--add .tasks-pane,
+  .workspace--shop .shop-pane,
+  .workspace--stats .stats-pane,
+  .workspace--settings .settings-pane {
+    display: block;
+  }
+
+  /* Settings lives in the bottom nav on mobile, so the top-bar cog is redundant. */
+  .settings-button {
+    display: none;
+  }
+}
+
+.bottom-nav button {
   flex: 1;
-  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0;
+  border: none;
+  border-right: 1px solid var(--border);
+  background: none;
   cursor: pointer;
-  background: #f3f3f3;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
 }
 
-.view-toggle button.active {
-  background: #4a7c3f;
-  border-color: #4a7c3f;
-  color: #fff;
+/* Bottom-nav icons (Tasks/Stats/Shop/Settings). */
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+/* The empty centre column the raised "+" floats over. Slightly wider than the
+   4rem circle so there's a visible gap around it. */
+.nav-spacer {
+  flex: 0 0 5rem;
+}
+
+.bottom-nav button:last-child {
+  border-right: none;
+}
+
+/* Stats sits just left of the centre gap — drop its divider so no line borders
+   the "+" spacer (keeps Tasks|Stats and Shop|Settings symmetric). */
+.bottom-nav button:nth-child(2) {
+  border-right: none;
+}
+
+.bottom-nav button.active {
+  background: var(--highlight);
+  font-weight: 600;
+}
+
+/* The middle "+" is a raised circle straddling the bottom edge — a fifth of it
+   sits below the screen. Absolutely placed, so Tasks/Shop split the bar evenly. */
+.bottom-nav .nav-add {
+  position: absolute;
+  left: 50%;
+  bottom: -0.8rem; /* 1/5 of the 4rem circle below the screen edge */
+  transform: translateX(-50%);
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Nudge the glyph up so it lines up with the Tasks/Shop labels (the circle
+     itself is shifted down past the screen edge). */
+  padding: 0 0 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  font-size: 1.6rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.bottom-nav .nav-add.active {
+  background: var(--highlight);
+}
+
+/* The category tab strip inside Tasks (mobile), directly under the top bar. Same
+   classic segmented style; hidden on desktop, which shows every card at once. */
+.category-nav {
+  display: flex;
+  align-items: center; /* center the buttons vertically */
+  margin: 0.5rem 0 1rem; /* small gap below the top bar */
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.category-nav button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.5rem; /* vertically compact */
+  white-space: nowrap;
+  border: none;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.category-nav button:last-child {
+  border-right: none;
+}
+
+.category-nav button.active {
+  background: var(--highlight);
   font-weight: 600;
 }
 
 .add-form {
   display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end; /* labels vary in height; align the controls' baselines */
   gap: 0.5rem;
-  margin: 1rem 0;
+  /* 0.5rem top matches the category strip's gap below the top bar (it's the
+     first item in the + and Shop tabs); 1rem below before the list. */
+  margin: 0.5rem 0 1rem;
+}
+
+/* Each control sits under its own label (the info text above every field). */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 0 0 auto;
+}
+
+.field-label {
+  font-size: 0.62rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.field > input {
+  width: 100%;
+}
+
+/* Field widths: the name grows; the numeric/short fields stay compact. */
+.field--grow {
+  flex: 1 1 10rem;
+}
+.field--amount {
+  flex: 0 0 5rem;
+}
+.field--unit {
+  flex: 0 0 6rem;
+}
+.field--interval {
+  flex: 0 0 8rem;
 }
 
 .add-form input {
-  flex: 1;
   min-width: 0;
   padding: 0.5rem;
 }
@@ -76,6 +358,173 @@
   opacity: 0.4;
 }
 
+/* --- Form fields: bordered, rounded, with a clear focus ring. ------------- */
+.add-form input,
+.add-form select,
+.amount-input,
+.day-start input {
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.add-form input::placeholder {
+  color: var(--muted);
+}
+
+.add-form input:focus-visible,
+.add-form select:focus-visible,
+.amount-input:focus-visible,
+.day-start input:focus-visible {
+  outline: none;
+  border-color: var(--highlight);
+  box-shadow: 0 0 0 3px rgba(160, 196, 255, 0.45);
+}
+
+/* --- Primary action buttons: Add (task + reward), Save, Redeem. ----------- */
+.add-form button,
+.amount-field button,
+.redeem-button {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--highlight);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.add-form button:hover,
+.amount-field button:hover,
+.redeem-button:hover:not(:disabled) {
+  background: #84b1f7;
+}
+
+.add-form button:active,
+.amount-field button:active,
+.redeem-button:active:not(:disabled) {
+  background: #6fa3f5;
+}
+
+.add-form button:focus-visible,
+.amount-field button:focus-visible,
+.redeem-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(160, 196, 255, 0.55);
+}
+
+.redeem-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Mobile: one card at a time, chosen via the category tab strip. */
+.category-cards {
+  margin: 1rem 0;
+}
+
+/* A category as a colored card. The header is tinted with the user's chosen
+   color (--card-color); the body holds the task rows. */
+.category-card {
+  display: none; /* mobile: only the selected category shows */
+  border: 1px solid var(--card-color);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+  /* Soft lift so each card reads as a distinct surface on the white page. */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.category-card--active {
+  display: block;
+}
+
+/* Mobile only: the bottom nav swaps the add form ('+') and the category list. On
+   desktop both show, so these rules are scoped to narrow screens. */
+@media (max-width: 767px) {
+  .tasks--list .add-region {
+    display: none;
+  }
+
+  .tasks--add .category-nav,
+  .tasks--add .category-cards,
+  .tasks--add .day-start {
+    display: none;
+  }
+}
+
+.category-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--card-color);
+}
+
+.category-card__title {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.category-card .row-list {
+  padding: 0.75rem;
+}
+
+/* The right-hand cluster of a card header: the palette (when open) + gear icon. */
+.card-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Per-card settings gear — toggles this card's color palette. Uses the user's
+   settings.png from /public. */
+.card-settings-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.card-settings-button:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.card-settings-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+/* The palette swatches in a card header. */
+.swatches {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.swatch {
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.swatch--active {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+}
+
 .row-list {
   list-style: none;
   margin: 0;
@@ -90,33 +539,592 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--border);
   border-radius: 8px;
+  background: var(--surface);
 }
 
 .row-name {
   flex: 1;
 }
 
+/* A task = the row "card" with, for Count/Timed tasks, an attached count bar
+   stacked beneath it. The two stack vertically and read as one connected piece. */
+.task-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.task-item .row {
+  min-width: 0;
+}
+
+/* A scaled task's card has the count bar fused to its bottom edge: drop the
+   card's bottom corners + border so the bar continues it seamlessly. */
+.row--with-bar {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none;
+}
+
+/* The "10 reps = 3" anchor in a short bar attached under the card, right-aligned
+   with a little side padding. Tinted with a noticeable wash of the category's own
+   color; falls back to a light gray when no color is picked. */
+.count-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.1rem 0.85rem 0.1rem 0.6rem;
+  background: color-mix(in srgb, var(--card-color, var(--border)) 75%, white);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* The reward badge: a round green coin that pops as the row's reward highlight.
+   margin-left:auto pushes it (and the edit icon after it) to the card's right. */
 .row-earn {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
-  color: #4a7c3f;
-  font-weight: 600;
+  color: #fff;
+  font-weight: 700;
+  background: var(--accent);
+  box-shadow: 0 1px 4px rgba(74, 124, 63, 0.45);
 }
 
 .row-cost {
   font-variant-numeric: tabular-nums;
-  color: #c89b3c;
+  color: var(--coin);
   font-weight: 600;
 }
 
 .row-cost::before {
   content: '\2022 ';
-  color: #c89b3c;
+  color: var(--coin);
 }
 
 .empty {
-  color: #888;
+  color: var(--muted);
   padding: 1rem 0;
   text-align: center;
+}
+
+/* Day-start control inside the settings panel — the streak's day boundary. */
+.day-start {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.day-start input {
+  padding: 0.25rem 0.4rem;
+}
+
+/* Recurring task's due indicator. */
+.due {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.due--now {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* The always-visible anchor on a scaled task: "10 reps = 3". */
+.anchor {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* In a task row the name no longer grows (the edit button claims the slack via
+   margin-left:auto below) so the controls stay left and the pencil pins right.
+   ShopView keeps the global `.row-name { flex: 1 }`, so its layout is unchanged. */
+.task-item .row-name {
+  flex: 0 1 auto;
+}
+
+/* Per-row edit button: a faint pencil that brightens on hover (edit.png). It is
+   the last child after the reward badge (which carries margin-left:auto), so it
+   sits at the far right of the card with the row's right padding as the gap. */
+.row-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: 0.2rem;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.row-edit:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.row-edit-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+
+.row-edit:hover .row-edit-icon {
+  opacity: 1;
+}
+
+/* --- Edit-task modal: a centered panel over a dimmed backdrop. ------------- */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.dialog {
+  width: 100%;
+  max-width: 22rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.dialog__title {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.dialog__close {
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.dialog__close:hover {
+  color: var(--text);
+}
+
+/* The edit dialog reuses .add-form, but stacks one field per row like the mobile
+   add tab so it reads cleanly in the narrow panel. */
+.dialog .add-form {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  margin-bottom: 0;
+}
+
+.dialog .field {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.dialog .add-form select,
+.dialog .amount-input,
+.dialog .unit-input {
+  width: 100%;
+}
+
+/* Footer buttons: Cancel (subtle) beside Save (primary, inherits .add-form button). */
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Specific enough to override the primary `.add-form button` fill. */
+.dialog .add-form .dialog__cancel {
+  background: var(--surface);
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  color: var(--text);
+  font-weight: 500;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+}
+
+.dialog .add-form .dialog__cancel:hover {
+  background: var(--bg);
+}
+
+/* The recorded amount shown as a button that opens the inline editor. */
+.amount-button {
+  background: var(--bg);
+  border: 1px dashed #c7c7c7;
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Inline amount editor on a completed task. */
+.amount-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Numeric textboxes (create-form anchor + inline editor). */
+.amount-input {
+  width: 3rem;
+  padding: 0.2rem 0.3rem;
+  text-align: right;
+}
+
+/* The in-row count input is sized to its content (size attr), so keep the side
+   padding tight — the default field padding looks too wide on a 2-3 digit box. */
+.row .amount-input {
+  padding: 0.2rem 0.15rem;
+}
+
+/* The unit input in the create form only appears for a Count task. */
+.unit-input {
+  min-width: 0;
+}
+
+/* In the add tab, the create fields stack vertically — one setting per row. (On
+   desktop the form stays a compact inline row; 'add' mode is mobile-only.) */
+.tasks--add .add-form {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.tasks--add .field {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.tasks--add .add-form select,
+.tasks--add .add-form button {
+  width: 100%;
+}
+
+/* Desktop: one rich page (SPEC §9). Tasks, Shop, and (on wide screens) the Stats
+   heatmap all show at once; the narrow-screen nav and tab strip are hidden. */
+@media (min-width: 768px) {
+  .app {
+    padding-bottom: 1rem;
+  }
+
+  .bottom-nav,
+  .category-nav {
+    display: none;
+  }
+
+  /* Category cards in a two-column grid that wraps to new rows (room for custom
+     tabs later). Two columns at every desktop width — wider cards leave room for
+     the row controls and the edit affordance. */
+  .category-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .category-card {
+    display: block;
+  }
+
+  .workspace {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  /* Settings is edited via the top-bar cog on desktop, not as a pane. */
+  .settings-pane {
+    display: none;
+  }
+
+  .tasks-pane {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .shop-pane {
+    flex: none;
+    width: 300px;
+    position: sticky;
+    top: 1rem;
+    border-left: 1px solid var(--border);
+    padding-left: 1.5rem;
+  }
+
+  /* The Stats heatmap pane only fits once the screen is wide enough for three
+     columns; below this it's hidden (the page stays Tasks + Shop). */
+  .stats-pane {
+    display: none;
+  }
+}
+
+@media (min-width: 1180px) {
+  .stats-pane {
+    display: block;
+    flex: none;
+    width: 320px;
+    position: sticky;
+    top: 1rem;
+    border-left: 1px solid var(--border);
+    padding-left: 1.5rem;
+  }
+}
+
+/* --- Section headings (Stats, Settings, Shop) ----------------------------- */
+.stats-title,
+.settings-pane__title,
+.shop-title {
+  font-size: 1rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+/* A labelled group of stat tiles (e.g. Totals, Consistency). */
+.stats-group-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 0.75rem 0 0.35rem;
+}
+
+/* Headline totals as compact tiles; wraps to fit the side pane or the page. */
+.stats-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+}
+
+.stats-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.stats-value {
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.stats-value--accent {
+  color: var(--accent);
+}
+
+.stats-value--coin {
+  color: var(--coin);
+}
+
+.stats-label {
+  font-size: 0.6rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Month switcher: arrows flank the month/year; arrows are the swipe indicator. */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0.25rem 0 0.6rem;
+}
+
+.cal-month {
+  min-width: 8.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  padding: 0;
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.cal-nav:hover:not(:disabled) {
+  background: var(--highlight);
+}
+
+.cal-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* One calendar month: seven weekday columns, centered. Small cells, no numbers. */
+.heatmap {
+  display: grid;
+  grid-template-columns: repeat(7, 22px);
+  gap: 3px;
+  justify-content: center;
+}
+
+/* The Mon..Sun header row. */
+.heatmap-label {
+  font-size: 0.58rem;
+  color: var(--muted);
+  text-align: center;
+  padding-bottom: 2px;
+}
+
+.heatmap-day {
+  aspect-ratio: 1;
+  border-radius: 4px;
+}
+
+/* Padding cells before the 1st of the month — empty. */
+.heatmap-blank {
+  aspect-ratio: 1;
+}
+
+/* Earnings intensity ramp (none -> busiest day). */
+.heat-0 {
+  background: #ebedf0;
+}
+.heat-1 {
+  background: #c6e7bf;
+}
+.heat-2 {
+  background: #88c47f;
+}
+.heat-3 {
+  background: var(--accent);
+}
+/* Future days of the current month: a faint, empty cell. */
+.heat-future {
+  background: #f5f6f8;
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0.5rem 0 0;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.heatmap-legend .heatmap-day {
+  width: 11px;
+  height: 11px;
+}
+
+/* --- Dev colour inspector (opened from Settings -> Debug) ------------------ */
+/* The inspector reuses the .dialog modal but is wider and scrolls its list. */
+.dev-panel {
+  max-width: 30rem;
+}
+
+.dev-color-list {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dev-color {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* A square swatch-style colour input. */
+.dev-color__picker {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--field-border);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+
+.dev-color__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.dev-color__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.dev-color__var {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.dev-color__context {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.dev-color__code {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }

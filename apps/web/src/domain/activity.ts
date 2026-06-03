@@ -19,19 +19,43 @@ export interface Activity {
   description?: string;
   valueType: ValueType;
   cadence: Cadence;
-  // The flat Fibonacci payout for a Simple activity (SPEC §2).
+  // The "default reward": the Fibonacci value earned when the default amount is
+  // done (SPEC §2). For a Simple task it is simply the flat payout. For a
+  // Quantitative/Timed task it anchors the linear reward — doing the default
+  // amount earns exactly this, and more/less scales from here (see `earnedFor`).
   baseFibonacciValue: number;
+  // The "default amount" anchor for Quantitative/Timed tasks: the amount (reps)
+  // or minutes that earns the default reward. Undefined for Simple. Must be > 0.
+  defaultAmount?: number;
+  // For Quantitative activities, the unit the amount is counted in (e.g. "reps",
+  // "pages"). Undefined for Simple/Timed.
+  unit?: string;
+  // For FlexibleInterval (Recurring) activities, the *latest due* interval: the
+  // number of days after the last completion by which it should be done again —
+  // the hard end of the rolling window (SPEC §3). Undefined for other cadences.
+  intervalDays?: number;
+  // For FlexibleInterval (Recurring) activities, the soft *reminder* point: how
+  // many days after the last completion the user wants a nudge — earlier than (or
+  // equal to) `intervalDays`. Stored for the Layer-1 notifications; undefined when
+  // unset or for other cadences.
+  reminderDays?: number;
   status: ActivityStatus;
   createdAt: string; // ISO-8601
 }
 
-// An append-only, immutable record of one completion. It snapshots the value
-// earned at that moment so editing the activity later never rewrites history
-// and balance/stats stay consistent (SPEC §10).
+// A record of one completion. `valueEarned` snapshots the reward at completion so
+// editing the *activity definition* later never rewrites past balance/stats
+// (SPEC §10). The measurement fields (`quantity`/`durationMinutes`) record how
+// much was done (SPEC §11); the user can change the amount anytime, which
+// deliberately *re-prices this one completion* (`valueEarned` is recomputed from
+// the new amount via `earnedFor`) — that is re-measuring the same act, not
+// rewriting history.
 export interface Completion {
   id: string;
   activityId: string;
   completedAt: string; // ISO-8601
-  valueEarned: number; // snapshot — not recomputed from the activity
+  valueEarned: number; // the reward for the recorded amount (see earnedFor)
+  quantity?: number; // how many units done (Quantitative)
+  durationMinutes?: number; // minutes spent (Timed)
   note?: string;
 }
