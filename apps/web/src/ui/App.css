@@ -567,16 +567,17 @@
   border-bottom: none;
 }
 
-/* The "10 reps = 3" anchor in a short bar attached under the card, right-aligned
-   with a little side padding. Tinted with a noticeable wash of the category's own
-   color; falls back to a light gray when no color is picked. */
+/* The "10 = 3" anchor in a short bar attached under the card, right-aligned with a
+   little side padding. Tinted with the brighter variant of the category's color
+   (--card-bar-color, from BRIGHT_PALETTE) so it stays visible where the pastels
+   washed out; falls back to a light gray when no color is picked. */
 .count-bar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.5rem;
   padding: 0.1rem 0.85rem 0.1rem 0.6rem;
-  background: color-mix(in srgb, var(--card-color, var(--border)) 75%, white);
+  background: var(--card-bar-color, var(--border));
   border: 1px solid var(--border);
   border-top: none;
   border-bottom-left-radius: 8px;

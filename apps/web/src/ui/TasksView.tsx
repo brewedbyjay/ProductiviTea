@@ -19,7 +19,7 @@ import {
   completionRepository,
   settingsRepository,
 } from '../infrastructure/dexie/repositories';
-import { PALETTE } from './palette';
+import { PALETTE, brightVariant } from './palette';
 
 // Whether a value-type carries a measurable amount (vs. a flat Simple task).
 function isScaled(type: ValueType): boolean {
@@ -382,7 +382,12 @@ function CategoryCard({
   children: React.ReactNode;
 }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const style = { '--card-color': color ?? 'var(--border)' } as CSSProperties;
+  // --card-color tints the header; --card-bar-color (the brighter variant) tints
+  // the attached count bar. Both fall back to a neutral when no color is picked.
+  const style = {
+    '--card-color': color ?? 'var(--border)',
+    '--card-bar-color': brightVariant(color) ?? 'var(--border)',
+  } as CSSProperties;
   return (
     <section
       className={active ? 'category-card category-card--active' : 'category-card'}
