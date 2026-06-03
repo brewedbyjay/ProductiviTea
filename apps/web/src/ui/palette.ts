@@ -13,25 +13,25 @@ export const PALETTE = [
 
 export type PaletteColor = (typeof PALETTE)[number];
 
-// A brighter, more saturated variant of each pastel above (same hue, index-aligned
-// with PALETTE; kept in sync with the --cb-* tokens in index.css). Used to tint the
-// task count bar, where the washed-out pastels were barely visible.
-export const BRIGHT_PALETTE = [
-  '#ff8787', // red
-  '#ffc078', // orange
-  '#ffe066', // yellow
-  '#8ce99a', // green
-  '#66d9e8', // cyan
-  '#74c0fc', // blue
-  '#b197fc', // purple
-  '#faa2c1', // pink
+// A lighter, whiter tint of each pastel above (same hue mixed toward white,
+// index-aligned with PALETTE; kept in sync with the --cb-* tokens in index.css).
+// Used to tint the task count bar so it reads as a soft, light band under the card.
+export const LIGHT_PALETTE = [
+  '#ffdede', // red
+  '#ffefdb', // orange
+  '#feffe2', // yellow
+  '#eaffe5', // green
+  '#d7fbff', // cyan
+  '#d9e7ff', // blue
+  '#e5e0ff', // purple
+  '#ffe8ff', // pink
 ] as const;
 
-// Map a pastel palette color to its brighter variant. Returns undefined for a
-// color that isn't in the palette (e.g. an unset category), so callers can fall
-// back to a neutral.
-export function brightVariant(color: string | undefined): string | undefined {
+// Map a pastel palette color to its lighter tint. Returns undefined for a color
+// that isn't in the palette (e.g. an unset category), so callers can fall back to
+// a neutral.
+export function lightVariant(color: string | undefined): string | undefined {
   if (!color) return undefined;
   const i = PALETTE.indexOf(color as PaletteColor);
-  return i === -1 ? undefined : BRIGHT_PALETTE[i];
+  return i === -1 ? undefined : LIGHT_PALETTE[i];
 }

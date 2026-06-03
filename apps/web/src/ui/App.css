@@ -568,9 +568,9 @@
 }
 
 /* The "10 = 3" anchor in a short bar attached under the card, right-aligned with a
-   little side padding. Tinted with the brighter variant of the category's color
-   (--card-bar-color, from BRIGHT_PALETTE) so it stays visible where the pastels
-   washed out; falls back to a light gray when no color is picked. */
+   little side padding. Tinted with a lighter, whiter tint of the category's color
+   (--card-bar-color, from LIGHT_PALETTE); falls back to a light gray when no color
+   is picked. */
 .count-bar {
   display: flex;
   align-items: center;

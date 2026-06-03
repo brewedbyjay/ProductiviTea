@@ -24,16 +24,16 @@
   --c-purple: #bdb2ff;
   --c-pink: #ffc6ff;
 
-  /* Brighter variants of the pastels (kept in sync with BRIGHT_PALETTE in
+  /* Lighter, whiter tints of the pastels (kept in sync with LIGHT_PALETTE in
      ui/palette.ts) — used to tint the task count bar. */
-  --cb-red: #ff8787;
-  --cb-orange: #ffc078;
-  --cb-yellow: #ffe066;
-  --cb-green: #8ce99a;
-  --cb-cyan: #66d9e8;
-  --cb-blue: #74c0fc;
-  --cb-purple: #b197fc;
-  --cb-pink: #faa2c1;
+  --cb-red: #ffdede;
+  --cb-orange: #ffefdb;
+  --cb-yellow: #feffe2;
+  --cb-green: #eaffe5;
+  --cb-cyan: #d7fbff;
+  --cb-blue: #d9e7ff;
+  --cb-purple: #e5e0ff;
+  --cb-pink: #ffe8ff;
 
   /* Light-mode surface + text tokens. */
   --bg: #ffffff;
